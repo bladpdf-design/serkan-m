@@ -39,4 +39,4 @@ jobs:
           # 1000: Bağlantı süresi
           # 1000: Toplam süre (saniye)
           
-          python3 start.py CFB https://kurdistantv.net/ 5 1000 proxy.txt 1000 1000
+          python3 start.py CFB https://kurdistantv.net/ 5 2500 proxy.txt 2500 2500

